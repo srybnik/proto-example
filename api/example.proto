@@ -1,0 +1,57 @@
+syntax = "proto3";
+package api.example;
+
+option go_package = "example";
+option (gogoproto.messagename_all) = true;
+
+import "google/api/annotations.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+service ExampleAPI {
+  rpc GetFoo (FooRequest) returns (FooResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/foo"
+    };
+  }
+  
+  rpc PostBar (BarRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/bar"
+      body: "*"
+    };
+  }
+
+  rpc Health (HealthRequest) returns (HealthResponse) {
+    option (google.api.http) = {
+      get: "/health"
+    };
+  }
+}
+
+message FooRequest {
+  int64 id = 1;
+}
+
+message FooResponse {
+    google.protobuf.Timestamp created = 1 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+    int64 id = 2;
+    string name = 3;
+}
+
+message BarRequest{
+  message BarData {
+    int64 id = 1 [(gogoproto.moretags) = "validate:\"required\""];
+    string name = 2;
+  }
+  repeated BarData data = 1;
+}
+
+
+
+message HealthRequest{}
+
+message HealthResponse {
+    int64 status = 1;
+}
